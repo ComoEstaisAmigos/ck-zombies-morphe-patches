@@ -12,8 +12,8 @@ https://morphe.software/add-source?github=ComoEstaisAmigos/ck-zombies-morphe-pat
 You need three things:
 
 - **Glu's original APK, v3.1.0.** It is the one signed by `CN=Glu Mobile`, certificate SHA-1
-  `5f206863fdfd884ee45873b7688828880d221301`. Every patch but "Smooth sound" first checks both
-  of its native libraries by hash, and fails if either is not Glu's, as in a modified repack or
+  `5f206863fdfd884ee45873b7688828880d221301`. The patches that change its native libraries
+  first check both of them by hash, and fail if either is not Glu's, as in a modified repack or
   an already patched build.
 - **The game's OBB**, `main.310.com.glu.android.zombsniper.obb` (460 MB), in
   `Android/obb/com.glu.android.zombsniper/`. The APK does not contain it and the game does not
