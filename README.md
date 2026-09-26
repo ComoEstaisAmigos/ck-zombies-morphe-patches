@@ -1,7 +1,7 @@
 # CK Zombies Patches
 
-Patches for Glu's *Contract Killer: Zombies* v3.1.0 (`com.glu.android.zombsniper`, 2014), for use
-with Morphe. They make the game run on current Android and fix what broke after Glu shut its
+Patches for Glu's *Contract Killer: Zombies (NR)* v3.1.0 (`com.glu.android.zombsniper`, 2014), for
+use with Morphe. They make the game run on current Android and fix what broke after Glu shut its
 servers down.
 
 ## 🚀 How to use these patches

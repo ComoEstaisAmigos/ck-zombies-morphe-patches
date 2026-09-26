@@ -3,7 +3,7 @@ group = "app.ckzombies"
 patches {
     about {
         name = "CK Zombies Patches"
-        description = "Patches for Contract Killer: Zombies (Glu, 2014), for use with Morphe"
+        description = "Morphe patches for Contract Killer: Zombies (NR) v3.1.0"
         source = "git@github.com:ComoEstaisAmigos/ck-zombies-morphe-patches.git"
         author = "ComoEstaisAmigos"
         contact = "na"

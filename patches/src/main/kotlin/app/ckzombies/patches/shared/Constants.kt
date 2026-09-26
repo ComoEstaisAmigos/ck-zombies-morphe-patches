@@ -8,8 +8,9 @@ object Constants {
     const val PACKAGE_NAME = "com.glu.android.zombsniper"
 
     /**
-     * Glu's own build of v3.1.0 (versionCode 310), signed `CN=Glu Mobile`. Repacks of the same
-     * version are refused by the native library hash check, whatever their version name says.
+     * Glu's own build of v3.1.0 (versionCode 310), signed `CN=Glu Mobile`. A repack of the same
+     * version whose native libraries differ from Glu's is refused by the hash check, whatever its
+     * version name says.
      */
     val COMPATIBILITY_CK_ZOMBIES = Compatibility(
         name = "CK Zombies",
