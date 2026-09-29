@@ -129,7 +129,7 @@ def native_patches(abi, a, b, plan):
     """
     ea, wa = loaded_words(a)
     eb, wb = loaded_words(b)
-    groups = {COMPAT: table("TEXT_RELOCATION")[abi] + table("JNI_GUARDS")[abi],
+    groups = {COMPAT: table("TEXT_RELOCATION")[abi] + table("JNI_GUARDS")[abi] + table("JNI_ARGUMENTS")[abi],
               CURRENCY: plan["edits"], DEAD: table("GSERVE_STALL")[abi] + table("DEAD_SERVERS")[abi]}
     state = {}
     for name, edits in groups.items():
