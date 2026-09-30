@@ -1,3 +1,9 @@
+## [1.1.1](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/compare/v1.1.0...v1.1.1) (2026-09-30)
+
+### 🐛 Bug Fixes
+
+* Stop the crash while loading on Android 16 ([a1e896a](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/commit/a1e896a08f11bf6e1a0ca0e37f0e8b1266ed4b3c))
+
 ## [1.1.0](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/compare/v1.0.0...v1.1.0) (2026-09-26)
 
 ### 🐛 Bug Fixes
