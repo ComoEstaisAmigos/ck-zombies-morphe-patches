@@ -1,3 +1,9 @@
+## [1.1.2](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/compare/v1.1.1...v1.1.2) (2026-09-30)
+
+### 🐛 Bug Fixes
+
+* Say what is wrong with the OBB instead of a failed download ([a12e83e](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/commit/a12e83ec03de374f5e1b7eda874534e825b3a386))
+
 ## [1.1.1](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/compare/v1.1.0...v1.1.1) (2026-09-30)
 
 ### 🐛 Bug Fixes
