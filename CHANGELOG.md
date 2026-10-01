@@ -1,3 +1,9 @@
+## [1.2.0](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/compare/v1.1.2...v1.2.0) (2026-10-01)
+
+### ✨ New Features
+
+* Add Render at 720p for high resolution screens ([25821d3](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/commit/25821d3417e3d2a31f28c203578829f009f09500))
+
 ## [1.1.2](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/compare/v1.1.1...v1.1.2) (2026-09-30)
 
 ### 🐛 Bug Fixes
