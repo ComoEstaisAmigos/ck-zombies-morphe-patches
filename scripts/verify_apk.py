@@ -24,7 +24,8 @@ What it proves, per ABI and for the whole archive:
     resources.arsc is the exception: a manifest edit makes the patcher re-encode it, so it is
     compared through aapt2 instead, and only the PUBLIC flag on id resources may differ
   * each bytecode edit of the patches found is present in the decoded smali, whichever dex
-    file holds it; with "Stop requests to dead servers", every OpenFeint class is an empty
+    file holds it, the missing-OBB message of "Modern Android compatibility" among them;
+    with "Stop requests to dead servers", every OpenFeint class is an empty
     shell, and exactly the ones whose superclasses reach Object through other shells keep a
     no-arg constructor that only calls super()
   * the APK carries v1 and v2 signatures (v1 is what Android before 7.0 checks)
@@ -519,17 +520,20 @@ def main():
             and getter[1:2] == ["return-object v0"]
         tapjoy = True if init and not connects and quiet else False if connects and not quiet else None
 
-        # Its missing-OBB half: ObbCheck.route() at the head of the resource screen's state loop,
-        # and no File.delete() left in findGPKFileInDir.
+        # The compatibility patch's missing-OBB message: ObbCheck.route() at the head of the
+        # resource screen's state loop, and no File.delete() left in findGPKFileInDir.
         states = [l.strip() for l in method("com/glu/platform/android/resdl/ResFileDownloadView", "newState").splitlines()
                   if l.strip()]
-        routes = any(f"{OBB_CHECK}->route(" in l for l in states)
         deletes = "Ljava/io/File;->delete()Z" in method("com/glu/platform/android/resdl/GluDownloadResMgr",
                                                          "findGPKFileInDir")
         drawing = [l.strip() for l in method("com/glu/platform/android/resdl/ResFileDownloadView$GluTextArea",
                                              "draw").splitlines() if l.strip()]
-        centred = any(f"{CENTERED_TEXT}->" in l for l in drawing)
-        obb = True if routes and centred and not deletes else False if deletes and not routes and not centred else None
+        check(obb_hook_at_loop_head(states), "ResFileDownloadView.newState asks ObbCheck.route() where every state "
+              "change lands, and turns the packed-OBB flag back on when its check starts")
+        check(exit_only_after_layout(states), "the error page calls ObbCheck.exitOnly() right after its layout")
+        check(text_area_centred(drawing), "GluTextArea.draw centres its lines with CenteredText, and restores "
+              "the canvas before it returns")
+        check(not deletes, "findGPKFileInDir no longer deletes wrong-size files")
 
         # Its OpenFeint half. A shell keeps a constructor exactly when it is not an interface and
         # its superclasses reach Object through other shells, the rule EmptyClasses.kt follows.
@@ -565,12 +569,11 @@ def main():
                 check(f".super {parent}" in text and shapes.get(parent) == "constructor",
                       f"{cls.rsplit('/', 1)[1]} still extends {parent}, which keeps its constructor")
 
-        java = tapjoy if tapjoy is not None and tapjoy == openfeint == obb else None
+        java = tapjoy if tapjoy is not None and tapjoy == openfeint else None
         native = found.get(DEAD)
         if java is None:
             check(False, f"{DEAD}: Java part partly applied (Tapjoy connect call: {connects}, quiet getter: {quiet}; "
-                  f"OpenFeint: {'untouched' if untouched else f'{len(emptied)} of {len(shells)} classes shells, {expected} expected'}; "
-                  f"OBB route: {routes}, centred text: {centred}, wrong-size delete: {deletes})")
+                  f"OpenFeint: {'untouched' if untouched else f'{len(emptied)} of {len(shells)} classes shells, {expected} expected'})")
             found[DEAD] = None
         elif native is not None and native != java:
             check(False, f"{DEAD}: native part {'on' if native else 'off'}, Java part {'on' if java else 'off'}")
@@ -578,12 +581,6 @@ def main():
         elif java:
             check(True, "TapjoyInterface.initialize no longer connects, and the instance getter logs nothing")
             check("TapjoyInterface;->usedActivity" in init, "TapjoyInterface.initialize still stores the activity")
-            check(obb_hook_at_loop_head(states), "ResFileDownloadView.newState asks ObbCheck.route() where every state "
-                  "change lands, and turns the packed-OBB flag back on when its check starts")
-            check(exit_only_after_layout(states), "the error page calls ObbCheck.exitOnly() right after its layout")
-            check(text_area_centred(drawing), "GluTextArea.draw centres its lines with CenteredText, and restores "
-                  "the canvas before it returns")
-            check(True, "findGPKFileInDir no longer deletes wrong-size files")
     finally:
         shutil.rmtree(work, ignore_errors=True)
 
