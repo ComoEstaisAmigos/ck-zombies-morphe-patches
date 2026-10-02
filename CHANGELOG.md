@@ -4,12 +4,6 @@
 
 * Bring back sounds that stayed silent on some devices ([6889c8b](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/commit/6889c8b88721797d77ab5952aff0b64b053b4a1a))
 
-## [1.2.1-dev.1](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/compare/v1.2.0...v1.2.1-dev.1) (2026-10-02)
-
-### 🐛 Bug Fixes
-
-* Bring back sounds that stayed silent on some devices ([6889c8b](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/commit/6889c8b88721797d77ab5952aff0b64b053b4a1a))
-
 ## [1.2.0](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/compare/v1.1.2...v1.2.0) (2026-10-01)
 
 ### ✨ New Features
