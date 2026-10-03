@@ -1,3 +1,9 @@
+## [1.2.2](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/compare/v1.2.1...v1.2.2) (2026-10-03)
+
+### 🐛 Bug Fixes
+
+* Show the missing OBB message on older devices ([edab842](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/commit/edab842f5a19dfd2721220a578825f9f46c39705))
+
 ## [1.2.1](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/compare/v1.2.0...v1.2.1) (2026-10-02)
 
 ### 🐛 Bug Fixes
