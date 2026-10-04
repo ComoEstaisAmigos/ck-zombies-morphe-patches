@@ -1,3 +1,9 @@
+## [1.3.2](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/compare/v1.3.1...v1.3.2) (2026-10-04)
+
+### 🐛 Bug Fixes
+
+* "Modern Android compatibility" patch now includes a fix for the store items disappearing on a fast swipe ([5c07bda](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/commit/5c07bda573fc60da52cbbd5155a2f1ea1c1b9211))
+
 ## [1.3.1](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/compare/v1.3.0...v1.3.1) (2026-10-04)
 
 ### 🐛 Bug Fixes
