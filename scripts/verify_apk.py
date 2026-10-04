@@ -57,8 +57,15 @@ INTRO_ONCE = "Lapp/ckzombies/extension/IntroOnce;"
 OBB_CHECK = "Lapp/ckzombies/extension/ObbCheck;"
 CENTERED_TEXT = "Lapp/ckzombies/extension/CenteredText;"
 SCREEN_FIT = "Lapp/ckzombies/extension/ScreenFit;"
+TOUCH_EDGE = "Lapp/ckzombies/extension/TouchEdge;"
 ACTIVITY = "Lcom/glu/platform/android/GluPlatformActivity;"
 TOUCH_METHODS = ("touchBegan", "touchMoved", "touchEnded", "touchCancelled")
+# What a touch method starts with, per patch: "Render at 720p" scales x and y, "Modern Android
+# compatibility" clamps them to 0. The two patches insert at the same place, in either order.
+SCALED = [f"invoke-static {{p1}}, {SCREEN_FIT}->x(I)I", "move-result p1",
+          f"invoke-static {{p2}}, {SCREEN_FIT}->y(I)I", "move-result p2"]
+CLAMPED = [f"invoke-static {{p1}}, {TOUCH_EDGE}->clamp(I)I", "move-result p1",
+           f"invoke-static {{p2}}, {TOUCH_EDGE}->clamp(I)I", "move-result p2"]
 failures = 0
 warnings = 0
 
@@ -134,6 +141,17 @@ def text_area_centred(lines):
         and len(ends) == 1 and returns == [ends[0] + 1]
 
 
+def leading_blocks(lines):
+    """Which of SCALED and CLAMPED a touch method's stripped lines start with, in any order."""
+    found, i = [], 0
+    while True:
+        block = next((b for b in (SCALED, CLAMPED) if b not in found and lines[i:i + len(b)] == b), None)
+        if block is None:
+            return found
+        found.append(block)
+        i += len(block)
+
+
 def screen_fit_parts(code):
     """
     Which edits of "Render at 720p" GluPlatformActivity carries. code(name) gives a method's
@@ -148,10 +166,8 @@ def screen_fit_parts(code):
     view = build[store].split()[1].rstrip(",") if store is not None else None
     parts = {"attach": store is not None and build[store + 1] ==
              f"invoke-static {{{view}}}, {SCREEN_FIT}->attach(Landroid/view/SurfaceView;)V"}
-    scaled = [f"invoke-static {{p1}}, {SCREEN_FIT}->x(I)I", "move-result p1",
-              f"invoke-static {{p2}}, {SCREEN_FIT}->y(I)I", "move-result p2"]
     for name in TOUCH_METHODS:
-        parts[name] = code(name)[:4] == scaled
+        parts[name] = SCALED in leading_blocks(code(name))
     read = next((i for i, l in enumerate(began) if l.startswith("iget ") and "->TOUCH_MOVE_THRESHOLD:I" in l), None)
     reg = began[read].split()[1].rstrip(",") if read is not None else None
     parts["threshold"] = read is not None and began[read + 1:read + 3] == [
@@ -504,7 +520,7 @@ def main():
               "onCreate calls ExternalStorage.prepare first")
         # The extension is merged whole, so its classes are there even without the patches that use them.
         for name in ("ExternalStorage", "SndCache", "ShimPlayer", "PoolPlayer", "SoundBudget", "IntroOnce", "ObbCheck",
-                     "CenteredText", "ScreenFit"):
+                     "CenteredText", "ScreenFit", "TouchEdge"):
             check(smali_file(f"app/ckzombies/extension/{name}") is not None, f"extension class {name} merged into the dex")
         prepare = method("app/ckzombies/extension/ExternalStorage", "prepare")
         check("Lapp/ckzombies/extension/ExternalStorage;->askForObbDir(" in prepare,
@@ -609,6 +625,15 @@ def main():
               "the canvas before it returns")
         check(not deletes, "findGPKFileInDir no longer deletes wrong-size files")
 
+        # The compatibility patch's touch clamp: every touch method starts by clamping x and y to 0,
+        # before or after the scaling of "Render at 720p".
+        activity_code = lambda name: [l.strip() for l in method(ACTIVITY[1:-1], name).splitlines()[1:]
+                                      if l.strip() and not l.strip().startswith(".")]
+        unclamped = [name for name in TOUCH_METHODS if CLAMPED not in leading_blocks(activity_code(name))]
+        check(not unclamped, "each of the four touch methods clamps x and y to 0 first, so a finger past the "
+              "view's edge cannot wrap around the engine's 14-bit positions" +
+              (f" (missing in {', '.join(unclamped)})" if unclamped else ""))
+
         # Its OpenFeint half. A shell keeps a constructor exactly when it is not an interface and
         # its superclasses reach Object through other shells, the rule EmptyClasses.kt follows.
         shells = openfeint_shells(smali_trees)
@@ -658,8 +683,7 @@ def main():
 
         # "Render at 720p": all of its edits to GluPlatformActivity, or no trace of ScreenFit there.
         activity = io.open(smali_file(ACTIVITY[1:-1]), encoding="utf-8").read()
-        parts = screen_fit_parts(lambda name: [l.strip() for l in method(ACTIVITY[1:-1], name).splitlines()[1:]
-                                               if l.strip() and not l.strip().startswith(".")])
+        parts = screen_fit_parts(activity_code)
         if all(parts.values()):
             found[FIT] = True
             check(True, "the game's view goes to ScreenFit.attach() right after it is built")
