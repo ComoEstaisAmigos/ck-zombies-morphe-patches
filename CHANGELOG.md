@@ -1,3 +1,10 @@
+## [1.3.0](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/compare/v1.2.2...v1.3.0) (2026-10-04)
+
+### ✨ New Features
+
+* Hide the Daily Deal popup ([58f8e08](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/commit/58f8e08b663eb463eaabf4fcde9945d63a6164bb))
+* Keep the 3D gameplay sharp with Render at 720p ([2401576](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/commit/240157656e7c8f9d09858e4e4d204d0b7e3b22f8))
+
 ## [1.2.2](https://github.com/ComoEstaisAmigos/ck-zombies-morphe-patches/compare/v1.2.1...v1.2.2) (2026-10-03)
 
 ### 🐛 Bug Fixes
