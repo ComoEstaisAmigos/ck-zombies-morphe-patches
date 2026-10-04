@@ -112,6 +112,33 @@ val unlimitedCurrencyPatch = rawResourcePatch(
 }
 
 /**
+ * Keeps the Daily Deal popup from opening on the map.
+ *
+ * `COffersManager::Tick()` runs on every map update. Once the delay since the popup was last
+ * closed has passed (20 minutes in the game's offers config), it looks up the day's item and,
+ * when there is one, builds a `CDailyDealDialogWindow` and queues it on the map. The `beq` that
+ * skips the window when the item is missing becomes a plain `b`, so `Tick()` always takes that
+ * path: it still stores the time of the check and checks again after the same delay.
+ *
+ * The deal itself is untouched. `COffersManager::UpdateOffers()` puts the day's item on sale,
+ * and the store shows it with its sale marker and timer. `CheckAndShowDD()` builds the same
+ * window but has no caller.
+ */
+@Suppress("unused")
+val hideDailyDealPatch = rawResourcePatch(
+    name = "Hide Daily Deal popup",
+    description = "Hides the annoying Daily Deal popup that shows at every launch. The deal is still in the store.",
+) {
+    compatibleWith(COMPATIBILITY_CK_ZOMBIES)
+
+    dependsOn(nativeLibraryCheckPatch)
+
+    execute {
+        editLibraries(NativeEdits.DAILY_DEAL)
+    }
+}
+
+/**
  * Removes the wait on the loading screen that only happens with a live connection.
  *
  * `AppInitGameDataGS::Load()` reports "not finished" for as long as the login flow runs, and

@@ -47,11 +47,11 @@ UNUSED_KT = os.path.join(os.path.dirname(EDITS_KT), "..", "compat", "UnusedPermi
 EMPTY_KT = os.path.join(os.path.dirname(EDITS_KT), "..", "compat", "EmptyClasses.kt")
 LIB = "libandroidplatformjni.so"
 WORD_EDIT = r"WordEdit\(0x([0-9A-F]+), 0x([0-9A-F]+)L, 0x([0-9A-F]+)L\)"
-COMPAT, CURRENCY, SOUND, UNUSED, DEAD, INTRO, FIT = ("Modern Android compatibility", "Unlimited currency",
-                                                     "Smooth sound", "Remove unused permissions",
-                                                     "Stop requests to dead servers", "Play intro once",
-                                                     "Render at 720p")
-ALL_PATCHES = (COMPAT, CURRENCY, SOUND, UNUSED, DEAD, INTRO, FIT)
+COMPAT, CURRENCY, SOUND, UNUSED, DEAD, INTRO, FIT, DEAL = ("Modern Android compatibility", "Unlimited currency",
+                                                           "Smooth sound", "Remove unused permissions",
+                                                           "Stop requests to dead servers", "Play intro once",
+                                                           "Render at 720p", "Hide Daily Deal popup")
+ALL_PATCHES = (COMPAT, CURRENCY, SOUND, UNUSED, DEAD, INTRO, FIT, DEAL)
 MOVIE = "Lcom/glu/platform/android/GluMovieActivity;"
 INTRO_ONCE = "Lapp/ckzombies/extension/IntroOnce;"
 OBB_CHECK = "Lapp/ckzombies/extension/ObbCheck;"
@@ -227,7 +227,8 @@ def native_patches(abi, a, b, plan):
     eb, wb = loaded_words(b)
     groups = {COMPAT: table("TEXT_RELOCATION")[abi] + table("JNI_GUARDS")[abi] + table("JNI_ARGUMENTS")[abi]
               + table("SOUND_CACHE_MODE")[abi],
-              CURRENCY: plan["edits"], DEAD: table("GSERVE_STALL")[abi] + table("DEAD_SERVERS")[abi]}
+              CURRENCY: plan["edits"], DEAD: table("GSERVE_STALL")[abi] + table("DEAD_SERVERS")[abi],
+              DEAL: table("DAILY_DEAL")[abi]}
     state = {}
     for name, edits in groups.items():
         if not edits:
@@ -239,7 +240,7 @@ def native_patches(abi, a, b, plan):
         else:
             state[name] = None
     check(state[COMPAT] is True, f"{abi}: {COMPAT}: all {len(groups[COMPAT])} words in place")
-    for name in (CURRENCY, DEAD):
+    for name in (CURRENCY, DEAD, DEAL):
         check(state[name] is not None, f"{abi}: {name}: " + {True: f"applied, all {len(groups[name])} words",
                                                              False: "not applied, every word Glu's",
                                                              None: "only partly applied"}[state[name]])
@@ -407,12 +408,12 @@ def main():
             e = ELFFile(io.BytesIO(got))
             check(not has_textrel(e) and text_relocations(e) == 0, f"{abi}: no text relocation left")
         # A library that is not the chain's says nothing about which native patches it carries.
-        found.update(dict.fromkeys((COMPAT, CURRENCY, DEAD), True if all(identical) else None))
+        found.update(dict.fromkeys((COMPAT, CURRENCY, DEAD, DEAL), True if all(identical) else None))
     else:
         plans = currency_plans()
         per_abi = [native_patches(abi, zo.read(f"lib/{abi}/{LIB}"), zp.read(f"lib/{abi}/{LIB}"), plans[abi])
                    for abi in abis]
-        for name in (COMPAT, CURRENCY, DEAD):
+        for name in (COMPAT, CURRENCY, DEAD, DEAL):
             states = {s[name] for s in per_abi}
             if len(states) > 1:
                 check(False, f"{name}: applied to some ABIs and not to others")
