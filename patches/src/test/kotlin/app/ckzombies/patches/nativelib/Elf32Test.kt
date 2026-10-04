@@ -185,6 +185,7 @@ class Elf32Test {
             "JNI_GUARDS" to NativeEdits.JNI_GUARDS,
             "JNI_ARGUMENTS" to NativeEdits.JNI_ARGUMENTS,
             "SOUND_CACHE_MODE" to NativeEdits.SOUND_CACHE_MODE,
+            "DAILY_DEAL" to NativeEdits.DAILY_DEAL,
             "CURRENCY" to NativeEdits.CURRENCY.mapValues { (_, plan) -> plan.edits },
         )
         for ((name, table) in tables) {
