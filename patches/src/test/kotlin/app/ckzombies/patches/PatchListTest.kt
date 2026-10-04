@@ -16,7 +16,7 @@ import kotlin.test.assertTrue
 /** What a player sees in the patch list: the names, and which ones start switched on. */
 class PatchListTest {
     @Test
-    fun `every patch is on by default except rendering at 720p`() {
+    fun `every patch is on by default`() {
         val patches = listOf(
             modernAndroidPatch, playIntroOncePatch, unusedPermissionsPatch, screenFitPatch, soundCachePatch,
             deadServersPatch, unlimitedCurrencyPatch,
@@ -26,7 +26,7 @@ class PatchListTest {
                 "Modern Android compatibility" to true,
                 "Play intro once" to true,
                 "Remove unused permissions" to true,
-                "Render at 720p" to false,
+                "Render at 720p" to true,
                 "Smooth sound" to true,
                 "Stop requests to dead servers" to true,
                 "Unlimited currency" to true,

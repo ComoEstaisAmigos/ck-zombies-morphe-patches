@@ -140,6 +140,8 @@ def screen_fit_parts(code):
     stripped instruction lines. The view goes to ScreenFit.attach() right after it is stored in
     m_MainView, each touch method starts by scaling its x and y in place, and touchBegan passes
     the drag threshold through ScreenFit.threshold() between reading and storing it.
+    EnableMultipleTouch, which the engine calls when it builds and destroys its 3D game, starts
+    by telling ScreenFit.gameScene(), and surfaceChanged by handing ScreenFit.format() the format.
     """
     build, began = code("iOnResDLDone"), code("touchBegan")
     store = next((i for i, l in enumerate(build) if l.startswith("iput-object ") and "->m_MainView:" in l), None)
@@ -155,6 +157,9 @@ def screen_fit_parts(code):
     parts["threshold"] = read is not None and began[read + 1:read + 3] == [
         f"invoke-static {{{reg}}}, {SCREEN_FIT}->threshold(I)I", f"move-result {reg}"] \
         and began[read + 3].startswith(f"iput {reg}, ") and "->m_MoveThreshold:I" in began[read + 3]
+    parts["scene"] = code("EnableMultipleTouch")[:1] == [
+        f"invoke-static {{p0, p1}}, {SCREEN_FIT}->gameScene(Ljava/lang/Object;Z)V"]
+    parts["format"] = code("surfaceChanged")[:1] == [f"invoke-static {{p2}}, {SCREEN_FIT}->format(I)V"]
     return parts
 
 
@@ -658,6 +663,8 @@ def main():
             found[FIT] = True
             check(True, "the game's view goes to ScreenFit.attach() right after it is built")
             check(True, "each of the four touch methods scales its x and y first, and touchBegan its drag threshold")
+            check(True, "EnableMultipleTouch tells ScreenFit when the 3D game starts and ends, so the 3D gameplay keeps the "
+                         "screen's own resolution, and surfaceChanged passes it the surface format")
         elif SCREEN_FIT not in activity:
             found[FIT] = False
         else:
@@ -671,7 +678,7 @@ def main():
     check("Verified using v1 scheme (JAR signing): true" in sig, "v1 signature")
     check("Verified using v2 scheme (APK Signature Scheme v2): true" in sig, "v2 signature")
     if expect_libs:
-        for name in (SOUND, UNUSED, DEAD, INTRO):
+        for name in (SOUND, UNUSED, DEAD, INTRO, FIT):
             check(found.get(name), f"{name} applied, as --expect-libs means every default patch is on")
 
     print("[patches found]")
