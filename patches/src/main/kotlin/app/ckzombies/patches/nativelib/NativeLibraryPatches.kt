@@ -158,8 +158,9 @@ internal val serverCheckStallPatch = rawResourcePatch {
 /**
  * Stops the two native requests to Glu's `gserve` S3 bucket, which no longer exists (a free
  * bucket name can be claimed by anyone, who would then be serving this game over plain HTTP),
- * takes out the two menu buttons that lead to dead services, and drops the offline message the
- * dead time server causes.
+ * takes out the two menu buttons that lead to dead services, drops the offline message the dead
+ * time server causes, and leaves out the one time offer that Google's dead billing service was
+ * to sell.
  *
  * - `CDynamicAd::SetImageUrl()` fetches Glu's own banner through `WebUtil::httpGet()` and never
  *   reads the call's result. With the call made a no-op the `WebUtil` stays idle, and
@@ -179,6 +180,11 @@ internal val serverCheckStallPatch = rawResourcePatch {
  *   `bne` on that flag becomes a no-op and the function returns as on any other update. The
  *   bonus logic and its saved fields are untouched; the day the message was last shown is kept
  *   only in memory and read nowhere else.
+ * - `CGPSMapGame::Init()` shows a one time offer of Glu credits once the tutorial is over
+ *   (`COffersManager::ShouldBeShown()`). Its Buy Now goes to Google's in-app billing, which is
+ *   gone, and the Java side refuses inside the call: the "Please wait..." window opened that
+ *   same frame, so it never gets the failure command, and the game waits forever. The `bne`
+ *   into the offer becomes a no-op. `ShouldBeShown()` still runs and counts the showing.
  */
 internal val deadServersNativePatch = rawResourcePatch {
     dependsOn(nativeLibraryCheckPatch)
